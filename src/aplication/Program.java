@@ -44,20 +44,12 @@ public class Program {
             // Deveria ser função da classe reserva checar se os dados fornecidos são condizentes
             // Não no programa principal!!
 
-            if (!checkOutUpdate.after(checkInUpdate) && (!checkInUpdate.after(checkIn) || !checkOutUpdate.after(checkOut))) {
-                System.out.println("Error in reservation: Reservation dates for update must be future dates and Check-out date must be after check-in date");
-            }
-            
-            else if (!checkOutUpdate.after(checkInUpdate)) {
-                System.out.println("Error in reservation: Check-out date must be after check-in date");
-            }
+            String error = reservation.updateDates(checkInUpdate, checkOutUpdate);
 
-            else if (!checkInUpdate.after(checkIn) || !checkOutUpdate.after(checkOut)) {
-                System.out.println("Error in reservation: Reservation dates for update must be future dates");
+            if (error != null) {
+                System.out.println(error);
             }
-            
             else {
-                reservation.updateDates(checkInUpdate, checkOutUpdate);
                 System.out.println(reservation);
             }
         }
