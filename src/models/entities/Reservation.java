@@ -1,6 +1,7 @@
 package models.entities;
 
 import java.util.Date;
+import models.exception.DomainException;
 import java.text.SimpleDateFormat;
 
 public class Reservation {
@@ -13,7 +14,12 @@ public class Reservation {
     public Reservation() {
     }
 
-    public Reservation(Integer roomNumber, Date checkIn, Date checkOut) {
+    public Reservation(Integer roomNumber, Date checkIn, Date checkOut) throws DomainException {
+
+        if (checkOut.before(checkIn)) {
+            throw new DomainException("Check-out date must be after check-in date");
+        }
+
         this.roomNumber = roomNumber;
         this.checkIn = checkIn;
         this.checkOut = checkOut;
@@ -35,31 +41,26 @@ public class Reservation {
         return checkOut;
     }
 
-    public String updateDates(Date checkIn, Date checkOut) {
+    public void updateDates(Date checkIn, Date checkOut) throws DomainException {
         if (!checkOut.after(checkIn) && (!checkIn.after(this.checkIn) || !checkOut.after(this.checkOut))) {
-            return "Error in reservation: Reservation dates for update must be future dates and Check-out date must be after check-in date";
+            throw new DomainException("Reservation dates for update must be future dates and Check-out date must be after check-in date");
         }
-        
         if (!checkOut.after(checkIn)) {
-            return "Error in reservation: Check-out date must be after check-in date";
+            throw new DomainException("Check-out date must be after check-in date");
         }
-
         if (!checkIn.after(this.checkIn) || !checkOut.after(this.checkOut)) {
-            return "Error in reservation: Reservation dates for update must be future dates";
+            throw new IllegalArgumentException("Reservation dates for update must be future dates");
         }
-        
         this.checkIn = checkIn;
         this.checkOut = checkOut;
-        
-        return null;
     }
 
-    public Integer duration() {
+    public long duration() {
         // Se fazemos getTime() em um objeto do tipo Date nos é
         // retornado um valor long que representa a qtd em milissegundos
 
         long durationMillis = checkOut.getTime() - checkIn.getTime();
-        return (int) durationMillis / (24 * 60 * 60 * 1000);
+        return durationMillis / (24 * 60 * 60 * 1000);
         
         // return TimeUnit.DAYS.convert(durationMillis, TimeUnit.MILLISECONDS);
     }
